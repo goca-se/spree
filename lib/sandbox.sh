@@ -10,7 +10,6 @@ fi
 
 cd ./sandbox
 
-# Remove any existing sqlite3 gem specification
 sed -i '' '/gem.*sqlite3/d' Gemfile
 
 cat <<RUBY >> Gemfile
@@ -24,10 +23,9 @@ group :test, :development do
 end
 
 gem "loofah", "< 2.21.0" 
-gem 'sqlite3', '~> 1.3.13', platforms: [:ruby, :mingw, :mswin, :x64_mingw]
+gem 'sqlite3', '~> 1.3.13'
 RUBY
 
 bundle install --gemfile Gemfile
-
 bundle exec rails g spree:auth:install
 bundle exec rails g spree:install --auto-accept --user_class=Spree::User --sample=true
