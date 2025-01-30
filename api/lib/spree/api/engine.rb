@@ -1,5 +1,4 @@
 require 'rails/engine'
-require 'versioncake'
 
 module Spree
   module Api
@@ -16,9 +15,6 @@ module Spree
         # JSON.dump which doesn't display the miliseconds
         config.json_engine = ActiveSupport::JSON
       end
-
-      config.versioncake.supported_version_numbers = [1]
-      config.versioncake.extraction_strategy = :http_header
 
       initializer "spree.api.environment", :before => :load_config_initializers do |app|
         Spree::Api::Config = Spree::ApiConfiguration.new
