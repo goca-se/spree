@@ -5,8 +5,10 @@ source 'https://rubygems.org'
 
 gem 'coffee-rails', '~> 4.2.0'
 gem 'sass-rails', '~> 5.0.0'
-gem 'sqlite3', platforms: [:ruby, :mingw, :mswin, :x64_mingw]
+gem 'sqlite3', '~> 1.3.13', platforms: [:ruby, :mingw, :mswin, :x64_mingw]
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
+gem "rails-deprecated_sanitizer"
+gem 'loofah', '~>2.19.1'
 
 platforms :jruby do
   gem 'jruby-openssl'
