@@ -32,7 +32,8 @@ module Spree
             end
           )]
         end
-        alias_method_chain :preferred_eligible_values, :numerification
+        alias_method :preferred_eligible_values, :preferred_eligible_values_with_numerification
+        alias_method :preferred_eligible_values_without_numerification, :preferred_eligible_values
 
         private
 

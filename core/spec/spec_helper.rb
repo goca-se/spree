@@ -34,7 +34,6 @@ end
 
 require 'spree/testing_support/factories'
 require 'spree/testing_support/preferences'
-require 'spree/testing_support/shoulda_matcher_configuration'
 require 'spree/testing_support/url_helpers'
 
 RSpec.configure do |config|
@@ -57,7 +56,7 @@ RSpec.configure do |config|
 
   config.extend WithModel
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include Spree::TestingSupport::Preferences
 
   # Clean out the database state before the tests run
