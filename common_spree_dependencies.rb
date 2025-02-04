@@ -42,6 +42,6 @@ end
 
 group :test, :development do
   gem 'rubocop', require: false
-  gem 'pry-byebug'
+  gem 'pry-byebug', '~> 3.7.0'
   gem 'webdrivers', '~> 4.0.0'
 end
