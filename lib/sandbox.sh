@@ -2,7 +2,7 @@
 # Used in the sandbox rake task in Rakefile
 
 rm -rf ./sandbox
-bundle exec rails _5.0.0_ new sandbox --skip-bundle
+bundle exec rails _5.2.8_ new sandbox --skip-bundle
 if [ ! -d "sandbox" ]; then
   echo 'sandbox rails application failed'
   exit 1
@@ -14,7 +14,7 @@ sed -i '' '/gem.*sqlite3/d' Gemfile
 
 cat <<RUBY >> Gemfile
 gem 'spree', path: '..'
-gem 'spree_auth_devise', git: 'https://github.com/brunocavalcante/spree_auth_devise'
+gem 'spree_auth_devise'
 
 group :test, :development do
   gem 'bullet'
