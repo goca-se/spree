@@ -1,12 +1,9 @@
-require 'truncate_html'
-require 'app/helpers/truncate_html_helper'
-
 module Spree
   module OrdersHelper
-    include TruncateHtmlHelper
-
     def truncated_product_description(product)
-      truncate_html(raw(product.description))
+      if product.description.present?
+        truncate(strip_tags(product.description), length: 120, separator: ' ', omission: '...')
+      end
     end
 
     def order_just_completed?(order)
