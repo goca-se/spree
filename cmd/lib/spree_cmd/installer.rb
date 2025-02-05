@@ -43,7 +43,7 @@ module SpreeCmd
       @spree_gem_options = {}
 
       if options[:edge] || options[:branch]
-        @spree_gem_options[:git] = 'https://github.com/spree/spree.git'
+        @spree_gem_options[:git] = 'https://github.com/goca-se/spree.git'
       elsif options[:path]
         @spree_gem_options[:path] = options[:path]
       elsif options[:git]
@@ -101,7 +101,7 @@ module SpreeCmd
         end
 
         if @install_default_auth && @spree_gem_options[:branch]
-          gem :spree_auth_devise, github: 'spree/spree_auth_devise', branch: @spree_gem_options[:branch]
+          gem :spree_auth_devise, github: 'goca-se/spree_auth_devise', branch: @spree_gem_options[:branch]
         elsif @install_default_auth
           gem :spree_auth_devise, version: '3.0.0'
         end
