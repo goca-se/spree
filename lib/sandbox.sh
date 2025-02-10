@@ -14,7 +14,7 @@ sed -i '' '/gem.*sqlite3/d' Gemfile
 
 cat <<RUBY >> Gemfile
 gem 'spree', path: '..'
-gem 'spree_auth_devise', git: 'https://github.com/goca-se/spree_auth_devise'
+gem 'spree_auth_devise', git: 'https://github.com/goca-se/spree_auth_devise', branch: 'version-3-1-rails-5-0'
 
 group :test, :development do
   gem 'bullet'
