@@ -18,8 +18,8 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_api', s.version
-  s.add_dependency 'spree_core', s.version
+  s.add_dependency 'goca-spree-api', s.version
+  s.add_dependency 'goca-spree-core', s.version
 
   s.add_dependency 'bootstrap-sass',  '~> 3.3'
   s.add_dependency 'jquery-rails',    '~> 4.1'
