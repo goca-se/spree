@@ -32,8 +32,7 @@ module Spree
           @payment_method = PaymentMethod.find(params[:id])
         end
 
-        update_params = params[ActiveModel::Naming.param_key(@payment_method)] || {}
-        attributes = payment_method_params.merge(update_params)
+        attributes = payment_method_params.merge(preferences_params)
         attributes.each do |k,v|
           if k.include?("password") && attributes[k].blank?
             attributes.delete(k)
@@ -52,6 +51,10 @@ module Spree
 
       private
 
+      def collection
+        @collection = super.order(position: :asc)
+      end
+
       def load_data
         @providers = Gateway.providers.sort{|p1, p2| p1.name <=> p2.name }
       end
@@ -66,6 +69,12 @@ module Spree
 
       def payment_method_params
         params.require(:payment_method).permit!
+      end
+
+      def preferences_params
+        key = ActiveModel::Naming.param_key(@payment_method)
+        return {} unless params.key? key
+        params.require(key).permit!
       end
     end
   end

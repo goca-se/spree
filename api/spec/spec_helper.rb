@@ -34,6 +34,7 @@ require 'spree/testing_support/preferences'
 require 'spree/api/testing_support/caching'
 require 'spree/api/testing_support/helpers'
 require 'spree/api/testing_support/setup'
+require 'spree/testing_support/shoulda_matcher_configuration'
 
 RSpec.configure do |config|
   config.backtrace_exclusion_patterns = [/gems\/activesupport/, /gems\/actionpack/, /gems\/rspec/]
@@ -44,11 +45,16 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
 
   config.include FactoryBot::Syntax::Methods
-  config.include Spree::Api::TestingSupport::Helpers, :type => :controller
-  config.extend Spree::Api::TestingSupport::Setup, :type => :controller
-  config.include Spree::TestingSupport::Preferences, :type => :controller
+  config.include Spree::Api::TestingSupport::Helpers, type: :controller
+  config.extend Spree::Api::TestingSupport::Setup, type: :controller
+  config.include Spree::TestingSupport::Preferences, type: :controller
 
   config.before do
     Spree::Api::Config[:requires_authentication] = true
+  end
+
+  config.include VersionCake::TestHelpers, type: :controller
+  config.before(:each, type: :controller) do
+    set_request_version('', 1)
   end
 end

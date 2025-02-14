@@ -76,7 +76,7 @@ module Spree
         expect(order.state).to eq "cart"
         expect(order.email).not_to be_nil
         request.headers["X-Spree-Order-Token"] = order.guest_token
-        api_put :update, :id => order.to_param
+        api_put :update, id: order.to_param
         expect(order.reload.state).to eq "address"
       end
 
@@ -269,7 +269,7 @@ module Spree
           user = create(:user)
           # Need to pass email as well so that validations succeed
           api_put :update, id: order.to_param, order_token: order.guest_token,
-            order: { user_id: user.id, email: "guest@spreecommerce.com" }
+            order: { user_id: user.id, email: "guest@spreecommerce.org" }
           expect(response.status).to eq(200)
           expect(json_response['user_id']).to eq(user.id)
         end
@@ -277,8 +277,8 @@ module Spree
 
       it "can assign an email to the order" do
         api_put :update, id: order.to_param, order_token: order.guest_token,
-          order: { email: "guest@spreecommerce.com" }
-        expect(json_response['email']).to eq("guest@spreecommerce.com")
+          order: { email: "guest@spreecommerce.org" }
+        expect(json_response['email']).to eq("guest@spreecommerce.org")
         expect(response.status).to eq(200)
       end
 
@@ -288,7 +288,7 @@ module Spree
         order.update_column(:state, "payment")
         expect(PromotionHandler::Coupon).to receive(:new).with(order).and_call_original
         expect_any_instance_of(PromotionHandler::Coupon).to receive(:apply).and_return({ coupon_applied?: true })
-        api_put :update, :id => order.to_param, order_token: order.guest_token, order: { coupon_code: "foobar" }
+        api_put :update, id: order.to_param, order_token: order.guest_token, order: { coupon_code: "foobar" }
       end
 
       def send_request
@@ -322,7 +322,7 @@ module Spree
           email: nil
         )
 
-        api_put :next, :id => order.to_param, :order_token => order.guest_token
+        api_put :next, id: order.to_param, order_token: order.guest_token
         expect(response.status).to eq(422)
         expect(json_response['error']).to match(/could not be transitioned/)
       end

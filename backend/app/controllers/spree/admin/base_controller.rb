@@ -2,7 +2,6 @@ module Spree
   module Admin
     class BaseController < Spree::BaseController
       helper 'spree/admin/navigation'
-      helper 'spree/admin/tables'
       layout '/spree/layouts/admin'
 
       before_action :authorize_admin
@@ -40,16 +39,6 @@ module Spree
 
       def render_js_for_destroy
         render partial: '/spree/admin/shared/destroy'
-      end
-
-      # Index request for JSON needs to pass a CSRF token in order to prevent JSON Hijacking
-      def check_json_authenticity
-        return unless request.format.js? || request.format.json?
-        return unless protect_against_forgery?
-        auth_token = params[request_forgery_protection_token]
-        unless auth_token && form_authenticity_token == URI.unescape(auth_token)
-          raise(ActionController::InvalidAuthenticityToken)
-        end
       end
 
       def config_locale

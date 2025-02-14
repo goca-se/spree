@@ -6,7 +6,7 @@ describe Spree::LocalizedNumber do
     before do
       I18n.enforce_available_locales = false
       I18n.locale = I18n.default_locale
-      I18n.backend.store_translations(:de, { :number => { :currency => { :format => { :delimiter => '.', :separator => ',' } } } })
+      I18n.backend.store_translations(:de, { number: { currency: { format: { delimiter: '.', separator: ',' } } } })
     end
 
     after do
@@ -41,6 +41,12 @@ describe Spree::LocalizedNumber do
         number_bak = number.dup
         subject.class.parse(number)
         expect(number).to eql(number_bak)
+      end
+    end
+
+    context "with empty string" do
+      it "should return 0" do
+        expect(subject.class.parse('')).to eql 0
       end
     end
   end

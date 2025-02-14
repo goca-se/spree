@@ -25,7 +25,7 @@ module Spree
 
       def map_nested_attributes_keys(klass, attributes)
         nested_keys = klass.nested_attributes_options.keys
-        attributes.inject({}) do |h, (k,v)|
+        attributes.to_h.inject({}) do |h, (k,v)|
           key = nested_keys.include?(k.to_sym) ? "#{k}_attributes" : k
           h[key] = v
           h
@@ -89,7 +89,7 @@ module Spree
       end
 
       def unprocessable_entity(message)
-        render text: { exception: message }.to_json, status: 422
+        render plain: { exception: message }.to_json, status: 422
       end
 
       def gateway_error(exception)

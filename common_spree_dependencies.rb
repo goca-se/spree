@@ -37,7 +37,9 @@ group :test do
   gem 'poltergeist', '~> 1.10'
   gem 'timecop'
   gem 'with_model'
+  gem 'mutant-rspec', '~> 0.8'
   gem 'rails-controller-testing'
+  gem 'shoulda-callback-matchers', '~> 1.1'
 end
 
 group :test, :development do

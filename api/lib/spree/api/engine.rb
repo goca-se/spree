@@ -1,4 +1,5 @@
 require 'rails/engine'
+require 'versioncake'
 
 module Spree
   module Api
@@ -16,7 +17,18 @@ module Spree
         config.json_engine = ActiveSupport::JSON
       end
 
-      initializer "spree.api.environment", :before => :load_config_initializers do |app|
+      initializer "spree.api.versioncake" do |_app|
+        VersionCake.setup do |config|
+          config.resources do |r|
+            r.resource %r{.*}, [], [], [1]
+          end
+
+          config.missing_version = 1
+          config.extraction_strategy = :http_header
+        end
+      end
+
+      initializer "spree.api.environment", before: :load_config_initializers do |app|
         Spree::Api::Config = Spree::ApiConfiguration.new
       end
 

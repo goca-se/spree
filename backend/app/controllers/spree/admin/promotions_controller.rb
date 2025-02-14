@@ -3,7 +3,7 @@ module Spree
     class PromotionsController < ResourceController
       before_action :load_data
 
-      helper 'spree/promotion_rules'
+      helper 'spree/admin/promotion_rules'
 
       protected
         def location_after_save
@@ -25,7 +25,7 @@ module Spree
           @collection = @search.result(distinct: true).
             includes(promotion_includes).
             page(params[:page]).
-            per(params[:per_page] || Spree::Config[:promotions_per_page])
+            per(params[:per_page] || Spree::Config[:admin_promotions_per_page])
         end
 
         def promotion_includes

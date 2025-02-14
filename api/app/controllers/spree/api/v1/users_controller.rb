@@ -7,6 +7,8 @@ module Spree
 
         def index
           @users = Spree.user_class.accessible_by(current_ability,:read).ransack(params[:q]).result.page(params[:page]).per(params[:per_page])
+          expires_in 15.minutes, public: true
+          headers['Surrogate-Control'] = "max-age=#{15.minutes}"
           respond_with(@users)
         end
 
@@ -21,7 +23,7 @@ module Spree
           authorize! :create, Spree.user_class
           @user = Spree.user_class.new(user_params)
           if @user.save
-            respond_with(@user, :status => 201, :default_template => :show)
+            respond_with(@user, status: 201, default_template: :show)
           else
             invalid_resource!(@user)
           end
@@ -30,7 +32,7 @@ module Spree
         def update
           authorize! :update, user
           if user.update_attributes(user_params)
-            respond_with(user, :status => 200, :default_template => :show)
+            respond_with(user, status: 200, default_template: :show)
           else
             invalid_resource!(user)
           end
@@ -39,7 +41,7 @@ module Spree
         def destroy
           authorize! :destroy, user
           user.destroy
-          respond_with(user, :status => 204)
+          respond_with(user, status: 204)
         end
 
         private

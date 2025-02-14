@@ -58,15 +58,18 @@ module Spree
     scope :in_stock, -> { joins(:stock_items).where('count_on_hand > ? OR track_inventory = ?', 0, false) }
 
     scope :not_discontinued, -> do
-      variant_table_name = Variant.quoted_table_name
-      where("#{variant_table_name}.discontinue_on IS NULL OR #{variant_table_name}.discontinue_on >= ?", Time.current)
+      where(
+        arel_table[:discontinue_on].eq(nil).or(
+          arel_table[:discontinue_on].gteq(Time.current)
+        )
+      )
     end
 
     scope :not_deleted, -> { where("#{Variant.quoted_table_name}.deleted_at IS NULL") }
 
     scope :for_currency_and_available_price_amount, -> (currency) do
       currency ||= Spree::Config[:currency]
-      joins(:prices).where("spree_prices.currency = ?", currency).where("spree_prices.amount IS NOT NULL").uniq
+      joins(:prices).where("spree_prices.currency = ?", currency).where("spree_prices.amount IS NOT NULL").distinct
     end
 
     scope :active, -> (currency = nil) do
@@ -264,7 +267,7 @@ module Spree
     def ensure_no_line_items
       if line_items.any?
         errors.add(:base, Spree.t(:cannot_destroy_if_attached_to_line_items))
-        return false
+        throw(:abort)
       end
     end
 

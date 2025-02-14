@@ -4,7 +4,7 @@ module Spree
       before_action :setup_new_option_value, only: :edit
 
       def update_values_positions
-        ActiveRecord::Base.transaction do
+        ApplicationRecord.transaction do
           params[:positions].each do |id, index|
             Spree::OptionValue.where(id: id).update_all(position: index)
           end
@@ -12,7 +12,7 @@ module Spree
 
         respond_to do |format|
           format.html { redirect_to admin_product_variants_url(params[:product_id]) }
-          format.js { render text: 'Ok' }
+          format.js { render plain: 'Ok' }
         end
       end
 
@@ -28,20 +28,8 @@ module Spree
 
 
       private
-        def load_product
-          @product = Product.friendly.find(params[:product_id])
-        end
-
         def setup_new_option_value
           @option_type.option_values.build if @option_type.option_values.empty?
-        end
-
-        def set_available_option_types
-          @available_option_types = if @product.option_type_ids.any?
-            OptionType.where.not(id: @product.option_type_ids)
-          else
-            OptionType.all
-          end
         end
     end
   end

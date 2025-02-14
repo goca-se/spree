@@ -39,34 +39,34 @@ module Spree
     add_simple_scopes simple_scopes
 
     add_search_scope :ascend_by_master_price do
-      joins(:master => :default_price).order("#{price_table_name}.amount ASC")
+      joins(master: :default_price).order("#{price_table_name}.amount ASC")
     end
 
     add_search_scope :descend_by_master_price do
-      joins(:master => :default_price).order("#{price_table_name}.amount DESC")
+      joins(master: :default_price).order("#{price_table_name}.amount DESC")
     end
 
     add_search_scope :price_between do |low, high|
-      joins(:master => :default_price).where(Price.table_name => { :amount => low..high })
+      joins(master: :default_price).where(Price.table_name => { amount: low..high })
     end
 
     add_search_scope :master_price_lte do |price|
-      joins(:master => :default_price).where("#{price_table_name}.amount <= ?", price)
+      joins(master: :default_price).where("#{price_table_name}.amount <= ?", price)
     end
 
     add_search_scope :master_price_gte do |price|
-      joins(:master => :default_price).where("#{price_table_name}.amount >= ?", price)
+      joins(master: :default_price).where("#{price_table_name}.amount >= ?", price)
     end
 
     # This scope selects products in taxon AND all its descendants
     # If you need products only within one taxon use
     #
-    #   Spree::Product.joins(:taxons).where(Taxon.table_name => { :id => taxon.id })
+    #   Spree::Product.joins(:taxons).where(Taxon.table_name => { id: taxon.id })
     #
     # If you're using count on the result of this scope, you must use the
     # `:distinct` option as well:
     #
-    #   Spree::Product.in_taxon(taxon).count(:distinct => true)
+    #   Spree::Product.in_taxon(taxon).count(distinct: true)
     #
     # This is so that the count query is distinct'd:
     #
@@ -162,8 +162,8 @@ module Spree
     # there is alternative faster and more elegant solution, it has small drawback though,
     # it doesn stack with other scopes :/
     #
-    # :joins => "LEFT OUTER JOIN (SELECT line_items.variant_id as vid, COUNT(*) as cnt FROM line_items GROUP BY line_items.variant_id) AS popularity_count ON variants.id = vid",
-    # :order => 'COALESCE(cnt, 0) DESC'
+    # joins: "LEFT OUTER JOIN (SELECT line_items.variant_id as vid, COUNT(*) as cnt FROM line_items GROUP BY line_items.variant_id) AS popularity_count ON variants.id = vid",
+    # order: 'COALESCE(cnt, 0) DESC'
     add_search_scope :descend_by_popularity do
       joins(:master).
       order(%Q{
@@ -202,7 +202,7 @@ module Spree
     search_scopes << :available
 
     def self.active(currency = nil)
-      not_discontinued.available(nil, currency)
+      available(nil, currency)
     end
     search_scopes << :active
 
@@ -228,7 +228,7 @@ module Spree
       #
       # Don't allow sort_column, a variable coming from params,
       # to be anything but a column in the database
-      if ActiveRecord::Base.connection.adapter_name == 'PostgreSQL' && !column_names.include?(sort_column)
+      if ApplicationRecord.connection.adapter_name == 'PostgreSQL' && !column_names.include?(sort_column)
         all
       else
         distinct
@@ -260,7 +260,7 @@ module Spree
         ids_or_records_or_names.flatten.map { |t|
           case t
           when Integer then Taxon.find_by(id: t)
-          when ActiveRecord::Base then t
+          when ApplicationRecord then t
           when String
             Taxon.find_by(name: t) ||
             Taxon.where("#{taxons}.permalink LIKE ? OR #{taxons}.permalink = ?", "%/#{t}/", "#{t}/").first

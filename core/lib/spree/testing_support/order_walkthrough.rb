@@ -13,8 +13,8 @@ class OrderWalkthrough
     # Need to create a valid zone too...
     zone = FactoryBot.create(:zone)
     country = FactoryBot.create(:country)
-    zone.members << Spree::ZoneMember.create(:zoneable => country)
-    country.states << FactoryBot.create(:state, :country => country)
+    zone.members << Spree::ZoneMember.create(zoneable: country)
+    country.states << FactoryBot.create(:state, country: country)
 
     # A shipping method must exist for rates to be displayed on checkout page
     unless Spree::ShippingMethod.exists?
@@ -45,8 +45,8 @@ class OrderWalkthrough
   end
 
   def self.address(order)
-    order.bill_address = FactoryBot.create(:address, :country_id => Spree::Zone.global.members.first.zoneable.id)
-    order.ship_address = FactoryBot.create(:address, :country_id => Spree::Zone.global.members.first.zoneable.id)
+    order.bill_address = FactoryBot.create(:address, country_id: Spree::Zone.global.members.first.zoneable.id)
+    order.ship_address = FactoryBot.create(:address, country_id: Spree::Zone.global.members.first.zoneable.id)
     order.next!
   end
 
