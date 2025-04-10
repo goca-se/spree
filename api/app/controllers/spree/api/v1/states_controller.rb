@@ -6,14 +6,14 @@ module Spree
 
         def index
           @states = scope.ransack(params[:q]).result.includes(:country)
-
+      
           if params[:page] || params[:per_page]
             @states = @states.page(params[:page]).per(params[:per_page])
           end
-
+      
           state = @states.last
           if stale?(state)
-            respond_with(@states)
+            render :index, layout: false
           end
         end
 

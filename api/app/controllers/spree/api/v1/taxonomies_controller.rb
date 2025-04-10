@@ -8,12 +8,13 @@ module Spree
         end
 
         def show
-          respond_with(taxonomy)
+          @taxonomy ||= taxonomy
+          render :show, layout: false
         end
 
-        # Because JSTree wants parameters in a *slightly* different format
         def jstree
-          show
+          @taxonomy ||= taxonomy
+          render :jstree, layout: false
         end
 
         def new

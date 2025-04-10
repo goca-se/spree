@@ -216,38 +216,37 @@ module Spree
 
           define_callbacks :updating_from_params, terminator: ->(_target, result) { result == false }
 
-          set_callback :updating_from_params, :before, :update_params_payment_source
-
           def update_from_params(params, permitted_params, request_env = {})
             success = false
             @updating_params = params
-            run_callbacks :updating_from_params do
-              # Set existing card after setting permitted parameters because
-              # rails would slice parameters containg ruby objects, apparently
-              existing_card_id = @updating_params[:order] ? @updating_params[:order].delete(:existing_card) : nil
 
-              attributes = @updating_params[:order] ? @updating_params[:order].permit(permitted_params).delete_if { |_k, v| v.nil? } : {}
+            update_params_payment_source
 
-              if existing_card_id.present?
-                credit_card = CreditCard.find existing_card_id
-                if credit_card.user_id != user_id || credit_card.user_id.blank?
-                  raise Core::GatewayError.new Spree.t(:invalid_credit_card)
-                end
+            # Set existing card after setting permitted parameters because
+            # rails would slice parameters containg ruby objects, apparently
+            existing_card_id = @updating_params[:order] ? @updating_params[:order].delete(:existing_card) : nil
 
-                credit_card.verification_value = params[:cvc_confirm] if params[:cvc_confirm].present?
+            attributes = @updating_params[:order] ? @updating_params[:order].permit(permitted_params).delete_if { |_k, v| v.nil? } : {}
 
-                attributes[:payments_attributes].first[:source] = credit_card
-                attributes[:payments_attributes].first[:payment_method_id] = credit_card.payment_method_id
-                attributes[:payments_attributes].first.delete :source_attributes
+            if existing_card_id.present?
+              credit_card = CreditCard.find existing_card_id
+              if credit_card.user_id != user_id || credit_card.user_id.blank?
+                raise Core::GatewayError.new Spree.t(:invalid_credit_card)
               end
 
-              if attributes[:payments_attributes]
-                attributes[:payments_attributes].first[:request_env] = request_env
-              end
+              credit_card.verification_value = params[:cvc_confirm] if params[:cvc_confirm].present?
 
-              success = update_attributes(attributes)
-              set_shipments_cost if shipments.any?
+              attributes[:payments_attributes].first[:source] = credit_card
+              attributes[:payments_attributes].first[:payment_method_id] = credit_card.payment_method_id
+              attributes[:payments_attributes].first.delete :source_attributes
             end
+
+            if attributes[:payments_attributes]
+              attributes[:payments_attributes].first[:request_env] = request_env
+            end
+
+            success = update_attributes(attributes)
+            set_shipments_cost if shipments.any?
 
             @updating_params = nil
             success
