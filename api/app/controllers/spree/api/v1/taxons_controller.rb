@@ -18,12 +18,16 @@ module Spree
         end
 
         def show
-          @taxon = taxon
-          respond_with(@taxon)
+          @taxon ||= taxonomy.taxons.accessible_by(current_ability, :read).find(params[:id])
+          render :show, layout: false
         end
 
         def jstree
-          show
+          @taxon ||= taxonomy.taxons.accessible_by(current_ability, :read).find(params[:id])
+          render :jstree, layout: false
+        end
+
+        def new
         end
 
         def create
@@ -33,7 +37,7 @@ module Spree
           taxonomy = Spree::Taxonomy.find_by(id: params[:taxonomy_id])
 
           if taxonomy.nil?
-            @taxon.errors[:taxonomy_id] = I18n.t(:invalid_taxonomy_id, scope: 'spree.api')
+            @taxon.errors.add(:taxonomy_id, I18n.t('spree.api.invalid_taxonomy_id'))
             invalid_resource!(@taxon) and return
           end
 
@@ -62,12 +66,11 @@ module Spree
         end
 
         def products
-          # Returns the products sorted by their position with the classification
-          # Products#index does not do the sorting.
           taxon = Spree::Taxon.find(params[:id])
           @products = taxon.products.ransack(params[:q]).result
           @products = @products.page(params[:page]).per(params[:per_page] || 500)
-          render "spree/api/v1/products/index"
+
+          render 'spree/api/v1/products/index', layout: false
         end
 
         private

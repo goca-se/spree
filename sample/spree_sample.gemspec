@@ -17,5 +17,5 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', s.version
+  s.add_dependency 'goca-spree-core', s.version
 end

@@ -29,7 +29,7 @@ module DelegateBelongsTo
     # @todo Integrate this with ActiveRecord::Dirty, so if you set a property through one of these setters and then call save on this object, it will save the associated object automatically.
     # delegate_belongs_to :contact
     # delegate_belongs_to :contact, [:defaults]  ## same as above, and useless
-    # delegate_belongs_to :contact, [:defaults, :address, :fullname], :class_name => 'VCard'
+    # delegate_belongs_to :contact, [:defaults, :address, :fullname], class_name: 'VCard'
     ##
     def delegate_belongs_to(association, *attrs)
       opts = attrs.extract_options!
@@ -92,4 +92,4 @@ module DelegateBelongsTo
   protected :delegator_for_setter
 end
 
-ActiveRecord::Base.send :include, DelegateBelongsTo
+ActiveRecord::Base.include DelegateBelongsTo

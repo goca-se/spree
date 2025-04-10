@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.version       = Spree.version
 
-  s.add_dependency 'spree_core', s.version
-  s.add_dependency 'rabl', '~> 0.12.0'
-  s.add_dependency 'versioncake', '~> 2.3.1'
+  s.add_dependency 'goca-spree-core', s.version
+  s.add_dependency 'rabl', '~> 0.13.1'
+  s.add_dependency 'versioncake', '~> 3.1.0'
 end

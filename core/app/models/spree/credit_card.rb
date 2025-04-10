@@ -1,5 +1,7 @@
 module Spree
   class CreditCard < Spree::Base
+    include ActiveMerchant::Billing::CreditCardMethods
+
     belongs_to :payment_method
     belongs_to :user, class_name: Spree.user_class, foreign_key: 'user_id'
     has_many :payments, as: :source
@@ -9,13 +11,14 @@ module Spree
     after_save :ensure_one_default
 
     # As of rails 4.2 string columns always return strings, we can override it on model level.
-    attribute :month, Type::Integer.new
-    attribute :year,  Type::Integer.new
+    attribute :month, ActiveRecord::Type::Integer.new
+    attribute :year,  ActiveRecord::Type::Integer.new
 
     attr_reader :number
     attr_accessor :encrypted_data,
                   :imported,
-                  :verification_value
+                  :verification_value,
+                  :manual_entry
 
     with_options if: :require_card_numbers?, on: :create do
       validates :month, :year, numericality: { only_integer: true }
@@ -23,7 +26,7 @@ module Spree
       validates :name, presence: true
     end
 
-    scope :with_payment_profile, -> { where('gateway_customer_profile_id IS NOT NULL') }
+    scope :with_payment_profile, -> { where.not(gateway_customer_profile_id: nil) }
     scope :default, -> { where(default: true) }
 
     # needed for some of the ActiveMerchant gateways (eg. SagePay)

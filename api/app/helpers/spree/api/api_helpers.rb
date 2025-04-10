@@ -29,7 +29,8 @@ module Spree
         :stock_movement_attributes,
         :stock_item_attributes,
         :promotion_attributes,
-        :store_attributes
+        :store_attributes,
+        :tag_attributes
       ]
 
       mattr_reader *ATTRIBUTES
@@ -98,7 +99,7 @@ module Spree
 
       @@taxon_attributes = [
         :id, :name, :pretty_name, :permalink, :parent_id,
-        :taxonomy_id
+        :taxonomy_id, :meta_title, :meta_description
       ]
 
       @@inventory_unit_attributes = [
@@ -160,6 +161,8 @@ module Spree
         :id, :name, :url, :meta_description, :meta_keywords, :seo_title,
         :mail_from_address, :default_currency, :code, :default
       ]
+
+      @@tag_attributes = [:id, :name]
 
       def variant_attributes
         if @current_user_roles && @current_user_roles.include?("admin")

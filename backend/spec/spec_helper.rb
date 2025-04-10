@@ -43,16 +43,18 @@ require 'spree/testing_support/order_walkthrough'
 require 'spree/testing_support/capybara_ext'
 require 'spree/testing_support/shoulda_matcher_configuration'
 
+require 'spree/core/controller_helpers/strong_parameters'
+
 require 'paperclip/matchers'
 
 require 'capybara-screenshot/rspec'
-Capybara.save_and_open_page_path = ENV['CIRCLE_ARTIFACTS'] if ENV['CIRCLE_ARTIFACTS']
+Capybara.save_path = ENV['CIRCLE_ARTIFACTS'] if ENV['CIRCLE_ARTIFACTS']
 
 require 'capybara/poltergeist'
 Capybara.javascript_driver = :poltergeist
 
 # Set timeout to something high enough to allow CI to pass
-Capybara.default_max_wait_time = 10
+Capybara.default_max_wait_time = 30
 
 RSpec.configure do |config|
   config.color = true
@@ -81,8 +83,8 @@ RSpec.configure do |config|
     end
     # TODO: Find out why open_transactions ever gets below 0
     # See issue #3428
-    if ActiveRecord::Base.connection.open_transactions < 0
-      ActiveRecord::Base.connection.increment_open_transactions
+    if ApplicationRecord.connection.open_transactions < 0
+      ApplicationRecord.connection.increment_open_transactions
     end
 
     DatabaseCleaner.start
@@ -90,17 +92,18 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
+    # wait_for_ajax sometimes fails so we should clean db first to get rid of false failed specs
+    DatabaseCleaner.clean
+
     # Ensure js requests finish processing before advancing to the next test
     wait_for_ajax if RSpec.current_example.metadata[:js]
-
-    DatabaseCleaner.clean
   end
 
   config.around do |example|
     Timeout.timeout(30, &example)
   end
 
-  config.after(:each, :type => :feature) do |example|
+  config.after(:each, type: :feature) do |example|
     missing_translations = page.body.scan(/translation missing: #{I18n.locale}\.(.*?)[\s<\"&]/)
     if missing_translations.any?
       puts "Found missing translations: #{missing_translations.inspect}"
@@ -108,16 +111,23 @@ RSpec.configure do |config|
     end
   end
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
   config.include Spree::TestingSupport::Preferences
   config.include Spree::TestingSupport::UrlHelpers
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include Spree::TestingSupport::Flash
 
+  config.include Spree::Core::ControllerHelpers::StrongParameters, type: :controller
+
   config.include Paperclip::Shoulda::Matchers
 
   config.extend WithModel
+
+  config.include VersionCake::TestHelpers, type: :controller
+  config.before(:each, type: :controller) do
+    set_request_version('', 1)
+  end
 
   config.verbose_retry = true
   config.display_try_failure_messages = true

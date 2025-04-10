@@ -51,7 +51,7 @@ require 'spree/testing_support/microdata'
 require 'paperclip/matchers'
 
 require 'capybara-screenshot/rspec'
-Capybara.save_and_open_page_path = ENV['CIRCLE_ARTIFACTS'] if ENV['CIRCLE_ARTIFACTS']
+Capybara.save_path = ENV['CIRCLE_ARTIFACTS'] if ENV['CIRCLE_ARTIFACTS']
 
 if ENV['WEBDRIVER'] == 'accessible'
   require 'capybara/accessible'
@@ -75,7 +75,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   if ENV['WEBDRIVER'] == 'accessible'
-    config.around(:each, :inaccessible => true) do |example|
+    config.around(:each, inaccessible: true) do |example|
       Capybara::Accessible.skip_audit { example.run }
     end
   end
@@ -96,8 +96,8 @@ RSpec.configure do |config|
     end
     # TODO: Find out why open_transactions ever gets below 0
     # See issue #3428
-    if ActiveRecord::Base.connection.open_transactions < 0
-      ActiveRecord::Base.connection.increment_open_transactions
+    if ApplicationRecord.connection.open_transactions < 0
+      ApplicationRecord.connection.increment_open_transactions
     end
     DatabaseCleaner.start
     reset_spree_preferences
@@ -107,7 +107,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-  config.after(:each, :type => :feature) do |example|
+  config.after(:each, type: :feature) do |example|
     missing_translations = page.body.scan(/translation missing: #{I18n.locale}\.(.*?)[\s<\"&]/)
     if missing_translations.any?
       puts "Found missing translations: #{missing_translations.inspect}"
@@ -116,7 +116,7 @@ RSpec.configure do |config|
   end
 
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
   config.include Spree::TestingSupport::Preferences
   config.include Spree::TestingSupport::UrlHelpers

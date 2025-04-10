@@ -5,15 +5,15 @@ require 'bundler/cli'
 
 module Spree
   class InstallGenerator < Rails::Generators::Base
-    class_option :migrate, :type => :boolean, :default => true, :banner => 'Run Spree migrations'
-    class_option :seed, :type => :boolean, :default => true, :banner => 'load seed data (migrations must be run)'
-    class_option :sample, :type => :boolean, :default => true, :banner => 'load sample data (migrations must be run)'
-    class_option :auto_accept, :type => :boolean
-    class_option :user_class, :type => :string
-    class_option :admin_email, :type => :string
-    class_option :admin_password, :type => :string
-    class_option :lib_name, :type => :string, :default => 'spree'
-    class_option :enforce_available_locales, :type => :boolean, :default => nil
+    class_option :migrate, type: :boolean, default: true, banner: 'Run Spree migrations'
+    class_option :seed, type: :boolean, default: true, banner: 'load seed data (migrations must be run)'
+    class_option :sample, type: :boolean, default: true, banner: 'load sample data (migrations must be run)'
+    class_option :auto_accept, type: :boolean
+    class_option :user_class, type: :string
+    class_option :admin_email, type: :string
+    class_option :admin_password, type: :string
+    class_option :lib_name, type: :string, default: 'spree'
+    class_option :enforce_available_locales, type: :boolean, default: nil
 
     def self.source_paths
       paths = self.superclass.source_paths
@@ -125,7 +125,11 @@ Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
     def run_migrations
       if @run_migrations
         say_status :running, "migrations"
-        quietly { rake 'db:migrate' }
+        silence_stream(STDOUT) do
+          silence_stream(STDERR) do
+            silence_warnings { rake 'db:migrate' }
+          end
+        end
       else
         say_status :skipping, "migrations (don't forget to run rake db:migrate)"
       end
@@ -141,7 +145,11 @@ Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
 
         cmd = lambda { rake("db:seed #{rake_options.join(' ')}") }
         if options[:auto_accept] || (options[:admin_email] && options[:admin_password])
-          quietly &cmd
+          silence_stream(STDOUT) do
+            silence_stream(STDERR) do
+              silence_warnings &cmd
+            end
+          end
         else
           cmd.call
         end
@@ -153,14 +161,18 @@ Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
     def load_sample_data
       if @load_sample_data
         say_status :loading, "sample data"
-        quietly { rake 'spree_sample:load' }
+        silence_stream(STDOUT) do
+          silence_stream(STDERR) do
+            silence_warnings { rake 'spree_sample:load' }
+          end
+        end
       else
         say_status :skipping, "sample data (you can always run rake spree_sample:load)"
       end
     end
 
     def notify_about_routes
-      insert_into_file File.join('config', 'routes.rb'), :after => "Rails.application.routes.draw do\n" do
+      insert_into_file File.join('config', 'routes.rb'), after: "Rails.application.routes.draw do\n" do
         %Q{
   # This line mounts Spree's routes at the root of your application.
   # This means, any requests to URLs such as /products, will go to Spree::ProductsController.
@@ -204,6 +216,18 @@ Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
       extensions.detect do |extension|
         File.exists?("#{filename}#{extension}")
       end
+    end
+
+    private
+
+    def silence_stream(stream)
+      old_stream = stream.dup
+      stream.reopen(RbConfig::CONFIG['host_os'] =~ /mswin|mingw/ ? 'NUL:' : '/dev/null')
+      stream.sync = true
+      yield
+    ensure
+      stream.reopen(old_stream)
+      old_stream.close
     end
   end
 end

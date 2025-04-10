@@ -17,10 +17,10 @@ Gem::Specification.new do |s|
   s.homepage     = 'http://spreecommerce.com'
   s.license      = 'BSD-3'
 
-  s.add_dependency 'spree_core', s.version
-  s.add_dependency 'spree_api', s.version
-  s.add_dependency 'spree_backend', s.version
-  s.add_dependency 'spree_frontend', s.version
-  s.add_dependency 'spree_sample', s.version
+  s.add_dependency 'goca-spree-core', s.version
+  s.add_dependency 'goca-spree-api', s.version
+  s.add_dependency 'goca-spree-backend', s.version
+  s.add_dependency 'goca-spree-frontend', s.version
+  s.add_dependency 'goca-spree-sample', s.version
   s.add_dependency 'spree_cmd', s.version
 end

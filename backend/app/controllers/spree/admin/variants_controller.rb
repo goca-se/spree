@@ -1,7 +1,7 @@
 module Spree
   module Admin
     class VariantsController < ResourceController
-      belongs_to 'spree/product', :find_by => :slug
+      belongs_to 'spree/product', find_by: :slug
       new_action.before :new_before
       before_action :load_data, only: [:new, :create, :edit, :update]
 
@@ -28,6 +28,7 @@ module Spree
         @object.attributes = master.attributes.except(
           'id', 'created_at', 'deleted_at', 'sku', 'is_master'
         )
+
         # Shallow Clone of the default price to populate the price field.
         @object.default_price = master.default_price.clone if master.default_price.present?
       end
@@ -38,6 +39,7 @@ module Spree
 
       def collection
         @deleted = (params.key?(:deleted) && params[:deleted] == "on") ? "checked" : ""
+
         @collection ||=
           if @deleted.blank?
             super.includes(:default_price, option_values: :option_type)

@@ -6,7 +6,7 @@
 #
 #   require 'spree/testing_support/controller_requests'
 #   RSpec.configure do |c|
-#     c.include Spree::TestingSupport::ControllerRequests, :type => :controller
+#     c.include Spree::TestingSupport::ControllerRequests, type: :controller
 #   end
 #
 # Then, in your controller tests, you can access spree routes like this:
@@ -80,13 +80,13 @@ module Spree
 
       def process_spree_action(action, parameters = nil, session = nil, flash = nil, method = "GET")
         parameters ||= {}
-        process(action, method, parameters, session, flash)
+        process(action, method: method, params: parameters, session: session, flash: flash)
       end
 
       def process_spree_xhr_action(action, parameters = nil, session = nil, flash = nil, method = :get)
         parameters ||= {}
-        parameters.reverse_merge!(:format => :json)
-        xml_http_request(method, action, parameters, session, flash)
+        parameters.reverse_merge!(format: :json)
+        process(action, method: method, params: parameters, session: session, flash: flash, xhr: true)
       end
     end
   end

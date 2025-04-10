@@ -25,7 +25,7 @@ module Spree
 
       def map_nested_attributes_keys(klass, attributes)
         nested_keys = klass.nested_attributes_options.keys
-        attributes.inject({}) do |h, (k,v)|
+        attributes.to_h.inject({}) do |h, (k,v)|
           key = nested_keys.include?(k.to_sym) ? "#{k}_attributes" : k
           h[key] = v
           h
@@ -64,9 +64,9 @@ module Spree
         return if @current_api_user
 
         if requires_authentication? && api_key.blank? && order_token.blank?
-          render "spree/api/errors/must_specify_api_key", status: 401 and return
+          render "spree/api/errors/must_specify_api_key", status: 401, layout: false and return
         elsif order_token.blank? && (requires_authentication? || api_key.present?)
-          render "spree/api/errors/invalid_api_key", status: 401 and return
+          render "spree/api/errors/invalid_api_key", status: 401, layout: false and return
         else
           # An anonymous user
           @current_api_user = Spree.user_class.new
@@ -89,7 +89,7 @@ module Spree
       end
 
       def unprocessable_entity(message)
-        render text: { exception: message }.to_json, status: 422
+        render plain: { exception: message }.to_json, status: 422
       end
 
       def gateway_error(exception)
@@ -102,7 +102,7 @@ module Spree
       end
 
       def not_found
-        render "spree/api/errors/not_found", status: 404 and return
+        render "spree/api/errors/not_found", status: 404, layout: false and return
       end
 
       def current_ability
