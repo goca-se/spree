@@ -2,7 +2,7 @@
 # Used in the sandbox rake task in Rakefile
 
 rm -rf ./sandbox
-bundle exec rails _5.0.0_ new sandbox --skip-bundle
+bundle exec rails _5.2.8_ new sandbox --skip-bundle
 if [ ! -d "sandbox" ]; then
   echo 'sandbox rails application failed'
   exit 1
