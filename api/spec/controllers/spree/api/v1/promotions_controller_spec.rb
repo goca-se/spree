@@ -10,7 +10,7 @@ module Spree
       end
 
       it 'should return JSON' do
-        payload = HashWithIndifferentAccess.new(JSON.parse(subject.body))
+        payload = ActiveSupport::HashWithIndifferentAccess.new(JSON.parse(subject.body))
         expect(payload).to_not be_nil
         Spree::Api::ApiHelpers.promotion_attributes.each do |attribute|
           expect(payload.has_key?(attribute)).to be true
