@@ -1,4 +1,4 @@
-class AddCounterCacheFromSpreeVariantsToSpreeStockItems < ActiveRecord::Migration
+class AddCounterCacheFromSpreeVariantsToSpreeStockItems < ActiveRecord::Migration[4.2]
   def up
     add_column :spree_variants, :stock_items_count, :integer, default: 0, null: false
 
